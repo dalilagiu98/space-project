@@ -1,60 +1,60 @@
-import React, { useEffect, useState } from "react";
-import ArticlesInterface from "../interfaces/Articles";
-import { Col, Container, Row } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
+import { useState, useEffect} from 'react'
+import ArticlesInterface from '../interfaces/ArticleInterfaces'
+import { Col, Container, Row } from 'react-bootstrap'
+import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom';
 
 const Articles = () => {
-  const [articles, setArticles] = useState<ArticlesInterface[]>([]);
+
+  const [arrayOfArticles, setArrayOfArticles] = useState<ArticlesInterface[]>([])
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch(
-        "https://api.spaceflightnewsapi.net/v4/articles"
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setArticles(data); // Imposta solo la proprietà results come array di articoli
+      const response = await fetch('https://api.spaceflightnewsapi.net/v4/articles')
+      if(response.ok) {
+        const articlesResult = await response.json()
+        console.log(articlesResult)
+        setArrayOfArticles(articlesResult.results)
       } else {
-        throw new Error("Errore nella chiamata");
+        throw new Error('errore nella fetch')
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error){
+      console.log(error)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchArticles();
-  }, []);
+    fetchArticles()
+  },[])
+
 
   return (
     <Container>
       <Row>
         <Col>
-          <div>hello</div>
+          <h1>All Articles:</h1>
         </Col>
       </Row>
       <Row>
-        {
-            articles.map((article) => {
-                return (
-                <Card key={article.id}>
-                <Card.Img variant="top" src="holder.js/100px180" />
+        {arrayOfArticles.map((article) => {
+          return (
+            <Col xs={6} md={3} className='h-100' key={article.id}>
+              <Card>
+                <Card.Img variant="top" src={article.image_url} />
                 <Card.Body>
-                  <Card.Title>{article.}</Card.Title>
-                  <Card.Text>
-                    Some quick example text to build on the card title and make up the
-                    bulk of the card's content.
+                  <Card.Title>{article.title}</Card.Title>
+                  <Card.Text>{article.summary}
                   </Card.Text>
-                  <Button variant="primary">Go somewhere</Button>
+                  <Link to={"/details/"+ article.id} className='btn btn-primary '>Go somewhere</Link>
                 </Card.Body>
               </Card>
-              )                
-            })
-        }
+            </Col>
+          )
+        })}
       </Row>
     </Container>
-  );
-};
 
-export default Articles;
+  )
+}
+
+export default Articles 
